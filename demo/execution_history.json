@@ -98,5 +98,113 @@
     ],
     "error_message": null,
     "is_demo_mode": true
+  },
+  {
+    "execution_id": "exec-3df31529",
+    "created_at": "2026-08-31T14:40:16.088197+00:00",
+    "updated_at": "2026-08-31T14:40:16.088211+00:00",
+    "status": "COMPLETED",
+    "resource": "prod-core-cluster",
+    "finding": "GKE node pool 'default-pool' in cluster 'prod-core-cluster' is significantly over-provisioned.",
+    "evidence": [
+      "30-Day Average CPU utilization: 21.4% (Peak < 38%).",
+      "30-Day Average Memory utilization: 28.7% (Peak < 42%).",
+      "Current cluster size: 12 nodes (e2-standard-8).",
+      "Calculated target cluster size: 5 nodes (e2-standard-8) maintaining 50%+ safety headroom."
+    ],
+    "old_configuration": {
+      "node_count": 12,
+      "machine_type": "e2-standard-8"
+    },
+    "new_configuration": {
+      "node_count": 5,
+      "machine_type": "e2-standard-8"
+    },
+    "projected_monthly_savings": 432.0,
+    "projected_annual_savings": 5184.0,
+    "confidence": 0.94,
+    "risk": "LOW",
+    "safety_result": null,
+    "github_pr": null,
+    "cloud_build_id": null,
+    "validation_result": null,
+    "gemini_reasoning": "[GEMINI 3.5+ REASONING ENGINE (DEMO MODE)]: GKE node pool 'prod-core-cluster' exhibits persistent low CPU utilization (21.4%), allowing a safe reduction from 12 to 5 nodes. This right-sizing yields $432.00/month in savings while retaining >50% headroom for peak traffic spikes.",
+    "logs": [
+      "[1/8 PENDING] Initialized execution run exec-3df31529 for resource prod-core-cluster."
+    ],
+    "error_message": null,
+    "is_demo_mode": true
+  },
+  {
+    "execution_id": "exec-d4edc558",
+    "created_at": "2026-08-31T14:40:18.101148+00:00",
+    "updated_at": "2026-08-31T14:40:18.101163+00:00",
+    "status": "COMPLETED",
+    "resource": "prod-core-cluster",
+    "finding": "GKE node pool 'default-pool' in cluster 'prod-core-cluster' is significantly over-provisioned.",
+    "evidence": [
+      "30-Day Average CPU utilization: 21.4% (Peak < 38%).",
+      "30-Day Average Memory utilization: 28.7% (Peak < 42%).",
+      "Current cluster size: 12 nodes (e2-standard-8).",
+      "Calculated target cluster size: 5 nodes (e2-standard-8) maintaining 50%+ safety headroom."
+    ],
+    "old_configuration": {
+      "node_count": 12,
+      "machine_type": "e2-standard-8"
+    },
+    "new_configuration": {
+      "node_count": 5,
+      "machine_type": "e2-standard-8"
+    },
+    "projected_monthly_savings": 432.0,
+    "projected_annual_savings": 5184.0,
+    "confidence": 0.94,
+    "risk": "LOW",
+    "safety_result": null,
+    "github_pr": null,
+    "cloud_build_id": null,
+    "validation_result": null,
+    "gemini_reasoning": "[GEMINI 3.5+ REASONING ENGINE (DEMO MODE)]: GKE node pool 'prod-core-cluster' exhibits persistent low CPU utilization (21.4%), allowing a safe reduction from 12 to 5 nodes. This right-sizing yields $432.00/month in savings while retaining >50% headroom for peak traffic spikes.",
+    "logs": [
+      "[1/8 PENDING] Initialized execution run exec-d4edc558 for resource prod-core-cluster."
+    ],
+    "error_message": null,
+    "is_demo_mode": true
+  },
+  {
+    "execution_id": "exec-8cc912cc",
+    "created_at": "2026-08-31T14:40:19.277044+00:00",
+    "updated_at": "2026-08-31T14:40:19.277060+00:00",
+    "status": "COMPLETED",
+    "resource": "prod-core-cluster",
+    "finding": "GKE node pool 'default-pool' in cluster 'prod-core-cluster' is significantly over-provisioned.",
+    "evidence": [
+      "30-Day Average CPU utilization: 21.4% (Peak < 38%).",
+      "30-Day Average Memory utilization: 28.7% (Peak < 42%).",
+      "Current cluster size: 12 nodes (e2-standard-8).",
+      "Calculated target cluster size: 5 nodes (e2-standard-8) maintaining 50%+ safety headroom."
+    ],
+    "old_configuration": {
+      "node_count": 12,
+      "machine_type": "e2-standard-8"
+    },
+    "new_configuration": {
+      "node_count": 5,
+      "machine_type": "e2-standard-8"
+    },
+    "projected_monthly_savings": 432.0,
+    "projected_annual_savings": 5184.0,
+    "confidence": 0.94,
+    "risk": "LOW",
+    "safety_result": null,
+    "github_pr": null,
+    "cloud_build_id": null,
+    "validation_result": null,
+    "gemini_reasoning": "[GEMINI 3.5+ REASONING ENGINE (DEMO MODE)]: GKE node pool 'prod-core-cluster' exhibits persistent low CPU utilization (21.4%), allowing a safe reduction from 12 to 5 nodes. This right-sizing yields $432.00/month in savings while retaining >50% headroom for peak traffic spikes.",
+    "logs": [
+      "[1/8 PENDING] Initialized execution run exec-8cc912cc for resource prod-core-cluster."
+    ],
+    "error_message": null,
+    "is_demo_mode": true
   }
 ]
