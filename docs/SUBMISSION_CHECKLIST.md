@@ -1,0 +1,28 @@
+# FinOps Autopilot — Submission Checklist
+
+- [x] **Gemini 3.5+ actually configured**: Configured as `GEMINI_MODEL=gemini-3.5-flash` in `backend/config.py`, `agent/orchestrator.py`, `tools/optimization_agent.py`, `README.md`, and `.env.example`.
+- [x] **Google ADK actually used**: Google ADK agent framework (`google-adk` v2.8.0) used in `agent/orchestrator.py` (`from google.adk import Agent`).
+- [x] **Google Cloud service used**: Uses Cloud Run, BigQuery, Cloud Monitoring, Firestore, Cloud Build, Pub/Sub, and Cloud Scheduler.
+- [x] **Taskmaster category**: Autonomous engineering agent completing end-to-end task execution.
+- [x] **Agent performs autonomous workflow**: 8-step workflow (Trigger $\rightarrow$ Analyze $\rightarrow$ Reason $\rightarrow$ Decide $\rightarrow$ Act $\rightarrow$ Validate $\rightarrow$ Remember $\rightarrow$ Report).
+- [x] **Demo mode works**: `DEMO_MODE=true` runs deterministically with local memory fallback (`demo/execution_history.json`).
+- [x] **Dashboard metrics consistent**: Single source of truth derived dynamically from execution history (`/api/metrics`).
+- [x] **GKE optimization works**: Node-pool right-sizing (12 $\rightarrow$ 5 nodes, 21.4% CPU, 28.7% Memory, $432/mo savings, $5,184/yr savings, 94% confidence).
+- [x] **Terraform patch generated**: Programmatic update of `infrastructure/terraform/gke.tf`.
+- [x] **Safety boundary enforced**: Safety Policy Agent checks $1,000/mo cap, 80% confidence, and protects IAM/KMS/DB resources.
+- [x] **GitHub integration implemented**: PyGithub integration for live PR creation with explicit `[SIMULATED — DEMO MODE]` labeling when unauthenticated.
+- [x] **Cloud Build configuration present**: `cloudbuild.yaml` staging validation pipeline.
+- [x] **Firestore/local memory works**: Stateful execution persistence (`finops_runs` / `demo/execution_history.json`).
+- [x] **Cloud Run ready**: Verified Dockerfile, FastAPI `/health` endpoint, PORT environment handling, and static asset serving.
+- [x] **Pub/Sub endpoint ready**: `/pubsub/trigger` push topic webhook.
+- [x] **Scheduler instructions ready**: Cloud Scheduler cron trigger configuration documented.
+- [x] **Tests pass**: 100% test pass rate on `pytest tests/ -v`.
+- [x] **README complete**: Polished hackathon-ready `README.md` with problem, solution, agentic workflow, architecture, quickstart, and deployment instructions.
+- [x] **Architecture diagram created**: `docs/architecture.md` with detailed Mermaid diagram.
+- [x] **Demo script created**: `docs/demo-script.md` with 4-minute timestamped recording script.
+- [x] **Devpost draft created**: `docs/devpost.md` with elevator pitch, story, and tech stack details.
+- [x] **No secrets committed**: Clean git environment (no `.env`, service account JSON, API keys, or `.venv`).
+- [x] **GitHub pushed**: Committed and pushed to `origin/main`.
+- [x] **Optional Veo checked**: Documented in architecture as video summary bonus module.
+- [x] **Optional social post prepared**: `docs/social_and_article.md` containing `#AllThingsAgenticHackathon` post.
+- [x] **Optional article prepared**: `docs/social_and_article.md` containing technical article draft.
