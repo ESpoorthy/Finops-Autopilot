@@ -1,12 +1,12 @@
 import json
 import os
-from typing import List, Dict, Any
+from typing import List
 from backend.config import settings
 from backend.models import CostMetric
 
 class CostAnalyst:
     """
-    Analyzes cloud cost and billing exports from BigQuery or seeded demo data.
+    Analyzes cloud cost and billing exports from BigQuery (LIVE MODE) or seeded demo data (DEMO MODE).
     """
     def __init__(self, demo_mode: bool = None):
         self.demo_mode = settings.DEMO_MODE if demo_mode is None else demo_mode
@@ -18,7 +18,6 @@ class CostAnalyst:
         try:
             from google.cloud import bigquery
             client = bigquery.Client(project=settings.GOOGLE_CLOUD_PROJECT)
-            # Example BigQuery GCP billing export query
             query = f"""
                 SELECT
                     service.description AS resource_type,
@@ -40,11 +39,12 @@ class CostAnalyst:
                     resource_type=row.resource_type,
                     monthly_cost=float(row.total_cost),
                     currency="USD",
-                    historical_trend="stable"
+                    historical_trend="stable",
+                    is_simulated=False
                 ))
             return metrics if metrics else self._get_demo_cost_metrics()
-        except Exception as e:
-            # Fallback gracefully to demo metrics if GCP credentials or dataset are unavailable
+        except Exception:
+            # Fallback cleanly if GCP BigQuery permissions/dataset are unavailable
             return self._get_demo_cost_metrics()
 
     def _get_demo_cost_metrics(self) -> List[CostMetric]:
@@ -58,28 +58,22 @@ class CostAnalyst:
                     return [
                         CostMetric(
                             resource_id=c["cluster_name"],
-                            resource_name=f"GKE Node Pool ({c['node_pool_name']})",
+                            resource_name=f"GKE Node Pool ({c['node_pool_name']}) [DEMO MODE]",
                             resource_type="Google Kubernetes Engine",
                             monthly_cost=c["total_monthly_cost"],
                             currency="USD",
-                            historical_trend="high_waste"
-                        ),
-                        CostMetric(
-                            resource_id="storage-bucket-logs",
-                            resource_name="Cloud Storage (log-archive)",
-                            resource_type="Cloud Storage",
-                            monthly_cost=180.50,
-                            currency="USD",
-                            historical_trend="stable"
+                            historical_trend="high_waste",
+                            is_simulated=True
                         )
                     ]
         return [
             CostMetric(
                 resource_id="prod-core-cluster",
-                resource_name="GKE Node Pool (default-pool)",
+                resource_name="GKE Node Pool (default-pool) [DEMO MODE]",
                 resource_type="Google Kubernetes Engine",
                 monthly_cost=2354.88,
                 currency="USD",
-                historical_trend="high_waste"
+                historical_trend="high_waste",
+                is_simulated=True
             )
         ]

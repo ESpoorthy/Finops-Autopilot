@@ -17,7 +17,7 @@
                 <div class="logo-icon">🤖</div>
                 <div>
                     <h1>FINOPS AUTOPILOT</h1>
-                    <p class="subtitle">Autonomous Cloud Cost & Architecture Optimization • Powered by Google ADK & Gemini</p>
+                    <p class="subtitle">Autonomous Cloud Cost & Architecture Optimization • Powered by Google ADK & Gemini 3.5+</p>
                 </div>
             </div>
             <div class="header-actions">
@@ -32,32 +32,32 @@
         <section class="kpi-grid">
             <div class="kpi-card">
                 <div class="kpi-title">Monthly Cloud Spend</div>
-                <div class="kpi-value" id="kpiSpend">$2,354.88</div>
+                <div class="kpi-value" id="kpiSpend">--</div>
                 <div class="kpi-sub">GCP Billing Export</div>
             </div>
             <div class="kpi-card highlight">
                 <div class="kpi-title">Potential Monthly Savings</div>
-                <div class="kpi-value savings" id="kpiSavingsMo">$432.00</div>
+                <div class="kpi-value savings" id="kpiSavingsMo">--</div>
                 <div class="kpi-sub">Identified Waste</div>
             </div>
             <div class="kpi-card highlight">
                 <div class="kpi-title">Annualized Savings</div>
-                <div class="kpi-value savings" id="kpiSavingsYr">$5,184.00</div>
+                <div class="kpi-value savings" id="kpiSavingsYr">--</div>
                 <div class="kpi-sub">12-Month Projections</div>
             </div>
             <div class="kpi-card">
                 <div class="kpi-title">Optimizations Found</div>
-                <div class="kpi-value" id="kpiOptCount">1</div>
+                <div class="kpi-value" id="kpiOptCount">--</div>
                 <div class="kpi-sub">GKE Right-Sizing</div>
             </div>
             <div class="kpi-card">
                 <div class="kpi-title">PRs Created</div>
-                <div class="kpi-value" id="kpiPrCount">1</div>
+                <div class="kpi-value" id="kpiPrCount">--</div>
                 <div class="kpi-sub">GitHub Automation</div>
             </div>
             <div class="kpi-card">
                 <div class="kpi-title">Validation Pass Rate</div>
-                <div class="kpi-value pass" id="kpiPassRate">100%</div>
+                <div class="kpi-value pass" id="kpiPassRate">--</div>
                 <div class="kpi-sub">Cloud Build Staging</div>
             </div>
         </section>
@@ -68,19 +68,19 @@
             <div class="card run-details-card">
                 <div class="card-header">
                     <h2>LATEST AUTONOMOUS RUN</h2>
-                    <span class="status-pill status-completed" id="runStatusPill">COMPLETED</span>
+                    <span class="status-pill status-completed" id="runStatusPill">--</span>
                 </div>
                 
                 <div class="run-meta" id="runMeta">
-                    <div><strong>Target Resource:</strong> <span id="metaResource">prod-core-cluster</span></div>
-                    <div><strong>Execution ID:</strong> <code id="metaExecutionId">exec-init</code></div>
-                    <div><strong>Confidence:</strong> <span id="metaConfidence">94%</span></div>
+                    <div><strong>Target Resource:</strong> <span id="metaResource">--</span></div>
+                    <div><strong>Execution ID:</strong> <code id="metaExecutionId">--</code></div>
+                    <div><strong>Confidence:</strong> <span id="metaConfidence">--</span></div>
                 </div>
 
                 <div class="finding-box" id="findingBox">
-                    <div class="finding-title">🔍 Detection Finding</div>
+                    <div class="finding-title">🔍 Detection Finding & Gemini 3.5+ Reasoning</div>
                     <div class="finding-text" id="findingText">
-                        GKE node pool 'default-pool' is significantly over-provisioned for current workloads.
+                        Loading latest optimization run...
                     </div>
                 </div>
 
@@ -89,24 +89,24 @@
                 <div class="timeline" id="workflowTimeline">
                     <div class="timeline-step step-done"><span class="step-check">✓</span> Cost analysis (BigQuery)</div>
                     <div class="timeline-step step-done"><span class="step-check">✓</span> Monitoring analysis (Cloud Monitoring)</div>
-                    <div class="timeline-step step-done"><span class="step-check">✓</span> Waste detected (12 → 5 nodes)</div>
+                    <div class="timeline-step step-done"><span class="step-check">✓</span> Gemini 3.5+ waste reasoning</div>
                     <div class="timeline-step step-done"><span class="step-check">✓</span> Safety policy validation</div>
                     <div class="timeline-step step-done"><span class="step-check">✓</span> Terraform HCL patch generated</div>
-                    <div class="timeline-step step-done"><span class="step-check">✓</span> GitHub PR opened</div>
+                    <div class="timeline-step step-done"><span class="step-check">✓</span> GitHub PR created</div>
                     <div class="timeline-step step-done"><span class="step-check">✓</span> Cloud Build validation</div>
-                    <div class="timeline-step step-done"><span class="step-check">✓</span> Validation passed & recorded</div>
+                    <div class="timeline-step step-done"><span class="step-check">✓</span> Recorded to Firestore memory</div>
                 </div>
 
                 <!-- GitHub PR Summary Card -->
                 <div class="pr-box" id="prBox">
                     <div class="pr-header">
                         <span class="pr-icon">🐙</span>
-                        <a id="prLink" href="#" target="_blank" class="pr-link">🤖 FinOps Autopilot: Right-size GKE node pool</a>
+                        <a id="prLink" href="#" target="_blank" class="pr-link">🤖 FinOps Autopilot Pull Request</a>
                     </div>
                     <div class="pr-details">
-                        <span><strong>Branch:</strong> <code id="prBranch">finops/right-size-gke-01</code></span> |
-                        <span><strong>Cloud Build:</strong> <code id="prBuildId">build-pass-8921</code></span> |
-                        <span><strong>Policy:</strong> <span class="badge-pass">AUTONOMY WITHIN BOUNDARIES</span></span>
+                        <span><strong>Branch:</strong> <code id="prBranch">--</code></span> |
+                        <span><strong>Cloud Build:</strong> <code id="prBuildId">--</code></span> |
+                        <span><strong>Status:</strong> <span class="badge-pass" id="prStatusBadge">AUTONOMY WITHIN BOUNDARIES</span></span>
                     </div>
                 </div>
             </div>
@@ -118,23 +118,23 @@
                 </div>
                 
                 <div class="savings-display">
-                    <div class="savings-amount-large" id="sidebarMonthly">$432</div>
+                    <div class="savings-amount-large" id="sidebarMonthly">--</div>
                     <div class="savings-period">per month</div>
-                    <div class="savings-amount-sub" id="sidebarAnnual">$5,184 / year</div>
+                    <div class="savings-amount-sub" id="sidebarAnnual">-- / year</div>
                 </div>
 
                 <div class="config-compare">
                     <div class="config-row">
                         <span>Current Node Count</span>
-                        <span class="badge-old" id="oldNodeCount">12 nodes</span>
+                        <span class="badge-old" id="oldNodeCount">--</span>
                     </div>
                     <div class="config-row">
                         <span>Recommended Node Count</span>
-                        <span class="badge-new" id="newNodeCount">5 nodes</span>
+                        <span class="badge-new" id="newNodeCount">--</span>
                     </div>
                     <div class="config-row">
                         <span>Machine Type</span>
-                        <span class="mono">e2-standard-8</span>
+                        <span class="mono" id="machineTypeVal">e2-standard-8</span>
                     </div>
                     <div class="config-row">
                         <span>CPU Utilization</span>
@@ -147,8 +147,8 @@
                 </div>
 
                 <div class="policy-note">
-                    <div class="policy-note-title">🛡️ Safety Policy Compliance</div>
-                    <p>Production apply requires mandatory human PR review and merge. Direct auto-deploy is prevented by safety policy.</p>
+                    <div class="policy-note-title">🛡️ Safety Policy Boundaries</div>
+                    <p>Production apply requires mandatory human engineer PR review and merge. Direct auto-deploy is prevented by safety policy.</p>
                 </div>
             </div>
         </main>
@@ -156,7 +156,7 @@
         <!-- Execution History Table -->
         <section class="card history-section">
             <div class="card-header">
-                <h2>EXECUTION MEMORY (FIRESTORE)</h2>
+                <h2>EXECUTION MEMORY (FIRESTORE / LOCAL STATE)</h2>
             </div>
             <div class="table-responsive">
                 <table class="history-table">

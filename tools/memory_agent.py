@@ -1,21 +1,29 @@
+import json
 import os
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict
 from backend.config import settings
 from backend.models import ExecutionRecord, RunStatus
 
-# Global in-memory storage fallback for local/demo runs
+# Global in-memory storage cache
 _IN_MEMORY_RUNS: Dict[str, ExecutionRecord] = {}
 
 class MemoryAgent:
     """
-    Manages persistent state of optimization executions in Firestore (or in-memory fallback).
+    Manages persistent state of optimization executions in Firestore (LIVE MODE) or local JSON file (DEMO MODE).
     Ensures idempotency by checking if a resource has already been optimized.
     """
     def __init__(self, demo_mode: bool = None):
         self.demo_mode = settings.DEMO_MODE if demo_mode is None else demo_mode
+        self.file_path = os.path.join(os.path.dirname(__file__), "..", "demo", "execution_history.json")
+        self._load_from_file()
 
     def clear_memory(self):
         _IN_MEMORY_RUNS.clear()
+        if os.path.exists(self.file_path):
+            try:
+                os.remove(self.file_path)
+            except Exception:
+                pass
 
     def is_already_optimized(self, resource_id: str, target_node_count: int) -> bool:
         """
@@ -24,15 +32,14 @@ class MemoryAgent:
         runs = self.list_execution_records()
         for r in runs:
             if r.resource == resource_id:
-                # If a run is PR_CREATED, VALIDATED, or COMPLETED with same or smaller node count
                 if r.status in (RunStatus.PR_CREATED, RunStatus.VALIDATING, RunStatus.VALIDATED, RunStatus.COMPLETED):
                     if r.new_configuration.get("node_count") == target_node_count:
                         return True
         return False
 
     def save_execution_record(self, record: ExecutionRecord) -> bool:
-        # Always update local memory cache
         _IN_MEMORY_RUNS[record.execution_id] = record
+        self._save_to_file()
 
         if self.demo_mode:
             return True
@@ -44,7 +51,6 @@ class MemoryAgent:
             doc_ref.set(record.model_dump())
             return True
         except Exception:
-            # Fall back cleanly to in-memory store
             return True
 
     def get_execution_record(self, execution_id: str) -> Optional[ExecutionRecord]:
@@ -64,8 +70,6 @@ class MemoryAgent:
         return None
 
     def list_execution_records(self, limit: int = 20) -> List[ExecutionRecord]:
-        records = list(_IN_MEMORY_RUNS.values())
-
         if not self.demo_mode:
             try:
                 from google.cloud import firestore
@@ -77,6 +81,26 @@ class MemoryAgent:
             except Exception:
                 pass
 
-        # Sort in-memory records descending by created_at
+        records = list(_IN_MEMORY_RUNS.values())
         records.sort(key=lambda r: r.created_at, reverse=True)
         return records[:limit]
+
+    def _save_to_file(self):
+        try:
+            os.makedirs(os.path.dirname(self.file_path), exist_ok=True)
+            data = [r.model_dump() for r in _IN_MEMORY_RUNS.values()]
+            with open(self.file_path, "w") as f:
+                json.dump(data, f, indent=2)
+        except Exception:
+            pass
+
+    def _load_from_file(self):
+        if os.path.exists(self.file_path):
+            try:
+                with open(self.file_path, "r") as f:
+                    data = json.load(f)
+                    for item in data:
+                        rec = ExecutionRecord(**item)
+                        _IN_MEMORY_RUNS[rec.execution_id] = rec
+            except Exception:
+                pass

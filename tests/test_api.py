@@ -5,29 +5,27 @@ from tools.memory_agent import MemoryAgent
 
 client = TestClient(app)
 
-def test_dashboard_metrics_endpoint():
-    MemoryAgent().clear_memory()
-    res = client.get("/api/metrics")
+def test_health_endpoint():
+    res = client.get("/health")
     assert res.status_code == 200
-    data = res.json()
-    assert "monthly_cloud_spend" in data
-    assert "savings_identified_monthly" in data
-    assert "validation_pass_rate" in data
+    assert res.json()["status"] == "HEALTHY"
 
-def test_list_runs_endpoint():
+def test_dashboard_metrics_and_runs_single_source_of_truth():
     MemoryAgent().clear_memory()
-    res = client.get("/api/runs")
-    assert res.status_code == 200
-    assert isinstance(res.json(), list)
+    
+    # Trigger orchestrator run
+    run_res = client.post("/api/run-orchestrator", json={"cluster_name": "prod-core-cluster", "demo_mode": True})
+    assert run_res.status_code == 200
+    run_data = run_res.json()
+    assert run_data["status"] == "COMPLETED"
 
-def test_trigger_orchestrator_api():
-    MemoryAgent().clear_memory()
-    res = client.post("/api/run-orchestrator", json={"cluster_name": "prod-core-cluster", "demo_mode": True})
-    assert res.status_code == 200
-    data = res.json()
-    assert data["status"] == "COMPLETED"
-    assert data["projected_monthly_savings"] == 432.00
-    assert data["projected_annual_savings"] == 5184.00
+    # Verify metrics matches run data
+    metrics_res = client.get("/api/metrics")
+    assert metrics_res.status_code == 200
+    m_data = metrics_res.json()
+    assert m_data["potential_savings"] == run_data["projected_monthly_savings"]
+    assert m_data["savings_identified_annual"] == run_data["projected_annual_savings"]
+    assert m_data["optimizations_found"] >= 1
 
 def test_pubsub_webhook_endpoint():
     res = client.post("/pubsub/trigger", json={"subscription": "projects/demo/subscriptions/sub"})

@@ -7,6 +7,7 @@ class RunStatus(str, Enum):
     PENDING = "PENDING"
     ANALYZING = "ANALYZING"
     OPTIMIZATION_FOUND = "OPTIMIZATION_FOUND"
+    SAFETY_VALIDATED = "SAFETY_VALIDATED"
     SAFETY_BLOCKED = "SAFETY_BLOCKED"
     PR_CREATED = "PR_CREATED"
     VALIDATING = "VALIDATING"
@@ -21,6 +22,7 @@ class CostMetric(BaseModel):
     monthly_cost: float
     currency: str = "USD"
     historical_trend: str = "stable"
+    is_simulated: bool = False
 
 class PerformanceMetric(BaseModel):
     resource_id: str
@@ -28,6 +30,7 @@ class PerformanceMetric(BaseModel):
     memory_utilization_pct: float
     current_node_count: int
     machine_type: str
+    is_simulated: bool = False
 
 class OptimizationProposal(BaseModel):
     proposal_id: str
@@ -44,6 +47,7 @@ class OptimizationProposal(BaseModel):
     risk_level: str = "LOW"
     tf_file_path: str = "infrastructure/terraform/gke.tf"
     is_demo: bool = True
+    gemini_reasoning: Optional[str] = None
 
 class SafetyPolicyResult(BaseModel):
     is_allowed: bool
@@ -55,9 +59,10 @@ class GitHubPRResult(BaseModel):
     pr_number: Optional[int] = None
     pr_url: Optional[str] = None
     branch_name: Optional[str] = None
-    status: str = "SUCCESS" # or SIMULATED
+    status: str = "SUCCESS" # e.g., SUCCESS or "SIMULATED (DEMO MODE)"
     title: str = ""
     body: str = ""
+    is_simulated: bool = False
 
 class ValidationResult(BaseModel):
     status: str # PASS or FAIL
@@ -67,6 +72,7 @@ class ValidationResult(BaseModel):
     policy_check: bool = True
     integration_test: bool = True
     details: List[str] = []
+    is_simulated: bool = False
 
 class ExecutionRecord(BaseModel):
     execution_id: str
@@ -86,5 +92,7 @@ class ExecutionRecord(BaseModel):
     github_pr: Optional[GitHubPRResult] = None
     cloud_build_id: Optional[str] = None
     validation_result: Optional[ValidationResult] = None
+    gemini_reasoning: Optional[str] = None
     logs: List[str] = []
     error_message: Optional[str] = None
+    is_demo_mode: bool = True

@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     const runBtn = document.getElementById('runBtn');
     
-    fetchMetrics();
-    fetchRuns();
+    // Fetch metrics and execution runs on load
+    refreshDashboard();
 
     runBtn.addEventListener('click', async () => {
         runBtn.disabled = true;
@@ -16,9 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const data = await res.json();
             
-            updateLatestRunUI(data);
-            await fetchMetrics();
-            await fetchRuns();
+            await refreshDashboard();
         } catch (err) {
             console.error('Failed to run orchestrator:', err);
             alert('Failed to trigger FinOps Autopilot workflow.');
@@ -28,6 +26,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+async function refreshDashboard() {
+    await fetchMetrics();
+    await fetchRuns();
+}
 
 async function fetchMetrics() {
     try {
@@ -54,9 +57,12 @@ async function fetchRuns() {
         if (runs && runs.length > 0) {
             updateLatestRunUI(runs[0]);
             renderHistoryTable(runs);
+        } else {
+            document.getElementById('historyTableBody').innerHTML = '<tr><td colspan="8" class="text-center">No optimization runs recorded yet. Click "Run FinOps Autopilot" to trigger workflow.</td></tr>';
         }
     } catch (e) {
         console.error('Error fetching runs:', e);
+        document.getElementById('historyTableBody').innerHTML = '<tr><td colspan="8" class="text-center text-error">Failed to load run history from backend API.</td></tr>';
     }
 }
 
@@ -66,14 +72,14 @@ function updateLatestRunUI(run) {
     document.getElementById('metaExecutionId').textContent = run.execution_id;
     document.getElementById('metaConfidence').textContent = `${(run.confidence * 100).toFixed(0)}%`;
     
-    if (run.finding) {
-        document.getElementById('findingText').textContent = run.finding;
+    let findingHtml = run.finding || 'GKE node pool default-pool is over-provisioned.';
+    if (run.gemini_reasoning) {
+        findingHtml += `<br/><br/><strong style="color: #93C5FD;">Gemini 3.5+ Reasoning:</strong><br/>${run.gemini_reasoning}`;
     }
+    document.getElementById('findingText').innerHTML = findingHtml;
 
-    if (run.projected_monthly_savings) {
-        document.getElementById('sidebarMonthly').textContent = `$${run.projected_monthly_savings.toLocaleString('en-US', {minimumFractionDigits: 0})}`;
-        document.getElementById('sidebarAnnual').textContent = `$${run.projected_annual_savings.toLocaleString('en-US', {minimumFractionDigits: 0})} / year`;
-    }
+    document.getElementById('sidebarMonthly').textContent = `$${run.projected_monthly_savings.toLocaleString('en-US', {minimumFractionDigits: 0})}`;
+    document.getElementById('sidebarAnnual').textContent = `$${run.projected_annual_savings.toLocaleString('en-US', {minimumFractionDigits: 0})} / year`;
 
     if (run.old_configuration && run.old_configuration.node_count) {
         document.getElementById('oldNodeCount').textContent = `${run.old_configuration.node_count} nodes`;
@@ -81,11 +87,15 @@ function updateLatestRunUI(run) {
     if (run.new_configuration && run.new_configuration.node_count) {
         document.getElementById('newNodeCount').textContent = `${run.new_configuration.node_count} nodes`;
     }
+    if (run.old_configuration && run.old_configuration.machine_type) {
+        document.getElementById('machineTypeVal').textContent = run.old_configuration.machine_type;
+    }
 
     if (run.github_pr) {
         document.getElementById('prLink').textContent = run.github_pr.title || '🤖 FinOps Autopilot PR';
         document.getElementById('prLink').href = run.github_pr.pr_url || '#';
         document.getElementById('prBranch').textContent = run.github_pr.branch_name || 'finops/gke-rightsize';
+        document.getElementById('prStatusBadge').textContent = run.github_pr.status || 'SIMULATED (DEMO MODE)';
     }
     if (run.cloud_build_id) {
         document.getElementById('prBuildId').textContent = run.cloud_build_id;

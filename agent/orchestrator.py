@@ -15,20 +15,32 @@ from agent.prompts import FINOPS_ORCHESTRATOR_SYSTEM_PROMPT
 class FinOpsOrchestrator:
     """
     Google ADK FinOps Orchestrator.
-    Coordinates the autonomous end-to-end cloud cost optimization workflow.
+    Coordinates specialized agents and tools for the autonomous end-to-end cloud cost optimization workflow.
     """
     def __init__(self, demo_mode: bool = None):
         self.demo_mode = settings.DEMO_MODE if demo_mode is None else demo_mode
-        self.adk_agent = Agent(
-            name="FinOpsOrchestratorAgent",
-            model=settings.GEMINI_MODEL,
-            instruction=FINOPS_ORCHESTRATOR_SYSTEM_PROMPT
-        )
         self.opt_agent = OptimizationAgent(demo_mode=self.demo_mode)
         self.safety_agent = SafetyAgent()
         self.github_agent = GitHubAgent()
         self.validation_agent = ValidationAgent()
         self.memory_agent = MemoryAgent(demo_mode=self.demo_mode)
+
+        # ADK Tools definitions for agent reasoning
+        self.cost_analyst = CostAnalyst(demo_mode=self.demo_mode)
+        self.arch_analyst = ArchitectureAnalyst(demo_mode=self.demo_mode)
+
+        # Google ADK Agent initialization with tools
+        self.adk_agent = Agent(
+            name="FinOpsOrchestratorAgent",
+            model=settings.GEMINI_MODEL,
+            instruction=FINOPS_ORCHESTRATOR_SYSTEM_PROMPT,
+            tools=[
+                self.cost_analyst.get_top_spending_resources,
+                self.arch_analyst.get_cluster_performance,
+                self.safety_agent.evaluate_proposal,
+                self.validation_agent.run_staging_validation
+            ]
+        )
 
     def run_autonomous_workflow(self, cluster_name: str = "prod-core-cluster") -> ExecutionRecord:
         execution_id = f"exec-{uuid.uuid4().hex[:8]}"
@@ -43,13 +55,14 @@ class FinOpsOrchestrator:
             execution_id=execution_id,
             status=RunStatus.PENDING,
             resource=cluster_name,
-            logs=logs
+            logs=logs,
+            is_demo_mode=self.demo_mode
         )
         self.memory_agent.save_execution_record(record)
 
         # Step 2: ANALYZING
         record.status = RunStatus.ANALYZING
-        log("[2/8 ANALYZING] Querying BigQuery billing export and Cloud Monitoring metrics...")
+        log("[2/8 ANALYZING] Querying BigQuery billing export and Cloud Monitoring utilization metrics...")
         self.memory_agent.save_execution_record(record)
 
         proposal = self.opt_agent.analyze_and_optimize(cluster_name)
@@ -59,7 +72,7 @@ class FinOpsOrchestrator:
             self.memory_agent.save_execution_record(record)
             return record
 
-        log(f"[3/8 OPTIMIZATION_FOUND] Detected over-provisioned GKE pool. Finding: {proposal.finding}")
+        log(f"[3/8 OPTIMIZATION_FOUND] Waste detected. {proposal.finding}")
         log(f"Projected Monthly Savings: ${proposal.projected_monthly_savings:,.2f} | Confidence: {proposal.confidence_score*100:.1f}%")
         
         record.status = RunStatus.OPTIMIZATION_FOUND
@@ -71,6 +84,7 @@ class FinOpsOrchestrator:
         record.projected_annual_savings = proposal.projected_annual_savings
         record.confidence = proposal.confidence_score
         record.risk = proposal.risk_level
+        record.gemini_reasoning = proposal.gemini_reasoning
         self.memory_agent.save_execution_record(record)
 
         # Idempotency check: check if already proposed/applied
@@ -81,8 +95,8 @@ class FinOpsOrchestrator:
             self.memory_agent.save_execution_record(record)
             return record
 
-        # Step 4: SAFETY_CHECK
-        log("[4/8 SAFETY_CHECK] Evaluating proposal against safety guardrail policies...")
+        # Step 4: SAFETY_VALIDATED or SAFETY_BLOCKED
+        log("[4/8 SAFETY_CHECK] Evaluating proposal against safety policy guardrails...")
         safety_res = self.safety_agent.evaluate_proposal(proposal)
         record.safety_result = safety_res
 
@@ -92,17 +106,19 @@ class FinOpsOrchestrator:
             self.memory_agent.save_execution_record(record)
             return record
 
-        log(f"[4/8 SAFETY_CHECK] Passed policy guardrails ({safety_res.policy_name}).")
+        record.status = RunStatus.SAFETY_VALIDATED
+        log(f"[4/8 SAFETY_VALIDATED] Passed policy guardrails ({safety_res.policy_name}).")
+        self.memory_agent.save_execution_record(record)
 
         # Step 5: PR_CREATED
-        log("[5/8 PR_CREATED] Applying Terraform patch and opening GitHub Pull Request...")
+        log("[5/8 PR_CREATED] Generating Terraform HCL patch and opening GitHub Pull Request...")
         pr_res = self.github_agent.create_optimization_pr(proposal, safety_res)
         record.github_pr = pr_res
         record.status = RunStatus.PR_CREATED
-        log(f"[5/8 PR_CREATED] GitHub PR #{pr_res.pr_number} created: {pr_res.pr_url}")
+        log(f"[5/8 PR_CREATED] GitHub PR #{pr_res.pr_number} ({pr_res.status}): {pr_res.pr_url}")
         self.memory_agent.save_execution_record(record)
 
-        # Step 6: VALIDATING
+        # Step 6: VALIDATING -> VALIDATED
         log("[6/8 VALIDATING] Triggering Cloud Build staging validation pipeline...")
         record.status = RunStatus.VALIDATING
         val_res, build_id = self.validation_agent.run_staging_validation(proposal.tf_file_path)
@@ -121,8 +137,8 @@ class FinOpsOrchestrator:
 
         # Step 7 & 8: RECORD & COMPLETED
         record.status = RunStatus.COMPLETED
-        log(f"[7/8 RECORD] Persisted execution record {execution_id} into Firestore memory.")
-        log(f"[8/8 COMPLETED] FinOps Autopilot successfully completed golden right-sizing run.")
+        log(f"[7/8 RECORD] Persisted execution record {execution_id} into persistent memory.")
+        log(f"[8/8 COMPLETED] FinOps Autopilot successfully completed autonomous optimization run.")
         self.memory_agent.save_execution_record(record)
 
         return record

@@ -10,10 +10,26 @@ from backend.models import ExecutionRecord, RunStatus
 from agent.orchestrator import FinOpsOrchestrator
 from tools.memory_agent import MemoryAgent
 
+from contextlib import asynccontextmanager
+
+def _ensure_initial_demo_record():
+    """
+    Ensures that at least one initial execution record exists so dashboard KPIs are never empty or $0 on startup.
+    """
+    runs = memory_agent.list_execution_records()
+    if not runs:
+        orchestrator.run_autonomous_workflow("prod-core-cluster")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    _ensure_initial_demo_record()
+    yield
+
 app = FastAPI(
     title="FinOps Autopilot API",
     description="Autonomous Cloud Cost & Architecture Optimization Platform powered by Google ADK & Gemini",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 memory_agent = MemoryAgent()
@@ -31,6 +47,10 @@ class RunRequest(BaseModel):
 class PubSubMessage(BaseModel):
     message: Optional[Dict[str, Any]] = None
     subscription: Optional[str] = None
+
+@app.get("/health")
+def health_check():
+    return {"status": "HEALTHY", "environment": settings.ENVIRONMENT, "demo_mode": settings.DEMO_MODE}
 
 @app.get("/", response_class=HTMLResponse)
 def get_dashboard():
@@ -62,6 +82,7 @@ def list_runs(limit: int = 20):
     """
     Lists recent autonomous optimization execution records.
     """
+    _ensure_initial_demo_record()
     return memory_agent.list_execution_records(limit=limit)
 
 @app.get("/api/runs/{execution_id}", response_model=ExecutionRecord)
@@ -75,11 +96,19 @@ def get_run(execution_id: str):
 def get_dashboard_metrics():
     """
     Computes overall FinOps Autopilot metrics for dashboard display.
+    Single source of truth derived from execution history.
     """
+    _ensure_initial_demo_record()
     runs = memory_agent.list_execution_records()
     total_spend = 2354.88
-    total_savings_mo = sum(r.projected_monthly_savings for r in runs if r.status in (RunStatus.COMPLETED, RunStatus.VALIDATED, RunStatus.PR_CREATED))
-    total_savings_yr = sum(r.projected_annual_savings for r in runs if r.status in (RunStatus.COMPLETED, RunStatus.VALIDATED, RunStatus.PR_CREATED))
+    
+    # Deriving single source of truth from runs history
+    valid_completed_runs = [r for r in runs if r.status in (RunStatus.COMPLETED, RunStatus.VALIDATED, RunStatus.PR_CREATED, RunStatus.SAFETY_VALIDATED)]
+    latest_run = runs[0] if runs else None
+
+    savings_monthly = latest_run.projected_monthly_savings if latest_run else 0.0
+    savings_annual = latest_run.projected_annual_savings if latest_run else 0.0
+
     prs_created = sum(1 for r in runs if r.github_pr is not None)
     validations_passed = sum(1 for r in runs if r.validation_result and r.validation_result.status == "PASS")
     total_validations = sum(1 for r in runs if r.validation_result is not None)
@@ -87,9 +116,9 @@ def get_dashboard_metrics():
 
     return {
         "monthly_cloud_spend": total_spend,
-        "potential_savings": total_savings_mo,
-        "savings_identified_monthly": total_savings_mo,
-        "savings_identified_annual": total_savings_yr,
+        "potential_savings": savings_monthly,
+        "savings_identified_monthly": savings_monthly,
+        "savings_identified_annual": savings_annual,
         "optimizations_found": len(runs),
         "prs_created": prs_created,
         "validation_pass_rate": round(pass_rate, 1),

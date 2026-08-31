@@ -8,7 +8,7 @@ from tools.terraform_generator import TerraformGenerator
 class GitHubAgent:
     """
     Automates GitHub integration: creates branches, commits Terraform patches, and opens Pull Requests.
-    Supports live PyGithub API and fallback simulation mode.
+    Supports live PyGithub API (LIVE MODE) and labeled simulation mode (DEMO MODE).
     """
     def __init__(self, token: Optional[str] = None, owner: str = None, repo: str = None):
         self.token = token or settings.GITHUB_TOKEN
@@ -18,11 +18,8 @@ class GitHubAgent:
 
     def create_optimization_pr(self, proposal: OptimizationProposal, safety_result: SafetyPolicyResult) -> GitHubPRResult:
         branch_name = f"finops/right-size-gke-{proposal.proposal_id}"
-        pr_title = f"🤖 FinOps Autopilot: Right-size GKE node pool ({proposal.resource_id})"
         
-        pr_body = self._generate_pr_body(proposal, safety_result)
-        
-        # Modify local terraform file first
+        # Always modify local terraform file on disk so the file patch is genuinely generated
         tf_file = proposal.tf_file_path
         old_nodes = proposal.current_config.get("node_count", 12)
         new_nodes = proposal.recommended_config.get("node_count", 5)
@@ -32,15 +29,17 @@ class GitHubAgent:
             TerraformGenerator.write_patch(tf_file, updated_content)
 
         if not self.token or settings.DEMO_MODE:
-            # Simulated PR for local testing / demo mode without requiring write tokens
             simulated_pr_num = int(time.time()) % 1000 + 100
+            pr_title = f"🤖 FinOps Autopilot: Right-size GKE node pool ({proposal.resource_id}) [SIMULATED — DEMO MODE]"
+            pr_body = self._generate_pr_body(proposal, safety_result, is_simulated=True)
             return GitHubPRResult(
                 pr_number=simulated_pr_num,
                 pr_url=f"https://github.com/{self.owner}/{self.repo_name}/pull/{simulated_pr_num}",
                 branch_name=branch_name,
-                status="SIMULATED",
+                status="SIMULATED (DEMO MODE)",
                 title=pr_title,
-                body=pr_body
+                body=pr_body,
+                is_simulated=True
             )
 
         try:
@@ -48,14 +47,14 @@ class GitHubAgent:
             g = Github(self.token)
             repo = g.get_repo(f"{self.owner}/{self.repo_name}")
             
-            # Get ref of base branch
+            pr_title = f"🤖 FinOps Autopilot: Right-size GKE node pool ({proposal.resource_id})"
+            pr_body = self._generate_pr_body(proposal, safety_result, is_simulated=False)
+
             base_ref = repo.get_git_ref(f"heads/{self.base_branch}")
             base_sha = base_ref.object.sha
             
-            # Create branch
             repo.create_git_ref(ref=f"refs/heads/{branch_name}", sha=base_sha)
             
-            # Commit file update
             file_obj = repo.get_contents(tf_file, ref=self.base_branch)
             commit_msg = f"chore(finops): right-size GKE node count from {old_nodes} to {new_nodes}"
             repo.update_file(
@@ -66,7 +65,6 @@ class GitHubAgent:
                 branch=branch_name
             )
             
-            # Open Pull Request
             pr = repo.create_pull(
                 title=pr_title,
                 body=pr_body,
@@ -80,25 +78,31 @@ class GitHubAgent:
                 branch_name=branch_name,
                 status="SUCCESS",
                 title=pr_title,
-                body=pr_body
+                body=pr_body,
+                is_simulated=False
             )
         except Exception as e:
-            # Fallback to simulated PR info if GitHub API errors out (e.g. rate limit / invalid token)
             simulated_pr_num = 42
+            pr_title = f"🤖 FinOps Autopilot: Right-size GKE node pool ({proposal.resource_id}) [SIMULATED — API FALLBACK]"
+            pr_body = self._generate_pr_body(proposal, safety_result, is_simulated=True)
             return GitHubPRResult(
                 pr_number=simulated_pr_num,
                 pr_url=f"https://github.com/{self.owner}/{self.repo_name}/pull/{simulated_pr_num}",
                 branch_name=branch_name,
                 status=f"SIMULATED (API fallback: {str(e)})",
                 title=pr_title,
-                body=pr_body
+                body=pr_body,
+                is_simulated=True
             )
 
-    def _generate_pr_body(self, proposal: OptimizationProposal, safety_result: SafetyPolicyResult) -> str:
+    def _generate_pr_body(self, proposal: OptimizationProposal, safety_result: SafetyPolicyResult, is_simulated: bool = False) -> str:
         evidence_str = "\n".join([f"- {e}" for e in proposal.evidence])
-        return f"""## 🤖 FinOps Autopilot Summary
+        mode_note = "\n> [!NOTE]\n> **Execution Mode**: `DEMO_MODE=true` (Simulated GitHub PR creation for hackathon demonstration).\n" if is_simulated else ""
+        reasoning_section = f"### 🧠 Gemini 3.5+ Reasoning\n{proposal.gemini_reasoning}\n\n" if proposal.gemini_reasoning else ""
 
-### Finding
+        return f"""## 🤖 FinOps Autopilot Summary {mode_note}
+
+{reasoning_section}### Finding
 {proposal.finding}
 
 ### Evidence

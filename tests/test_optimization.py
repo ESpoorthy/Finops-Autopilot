@@ -2,7 +2,7 @@ import pytest
 from tools.optimization_agent import OptimizationAgent
 from tools.terraform_generator import TerraformGenerator
 
-def test_optimization_agent_golden_scenario():
+def test_optimization_agent_dynamic_math_and_gemini():
     opt_agent = OptimizationAgent(demo_mode=True)
     proposal = opt_agent.analyze_and_optimize("prod-core-cluster")
     
@@ -12,6 +12,8 @@ def test_optimization_agent_golden_scenario():
     assert proposal.projected_monthly_savings == 432.00
     assert proposal.projected_annual_savings == 5184.00
     assert proposal.confidence_score == 0.94
+    assert proposal.gemini_reasoning is not None
+    assert "GEMINI" in proposal.gemini_reasoning.upper()
 
 def test_terraform_generator_node_count_patch():
     file_path = "infrastructure/terraform/gke.tf"
