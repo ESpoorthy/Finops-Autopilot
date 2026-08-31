@@ -1,8 +1,8 @@
 [
   {
-    "execution_id": "exec-5392ea5c",
-    "created_at": "2026-08-31T14:19:03.229587+00:00",
-    "updated_at": "2026-08-31T14:19:03.229603+00:00",
+    "execution_id": "exec-d0e4b696",
+    "created_at": "2026-08-31T15:01:57.668404+00:00",
+    "updated_at": "2026-08-31T15:01:57.668420+00:00",
     "status": "COMPLETED",
     "resource": "prod-core-cluster",
     "finding": "GKE node pool 'default-pool' in cluster 'prod-core-cluster' is significantly over-provisioned.",
@@ -31,15 +31,15 @@
       "blocked_categories": []
     },
     "github_pr": {
-      "pr_number": 1043,
-      "pr_url": "https://github.com/ESpoorthy/Finops-Autopilot/pull/1043",
-      "branch_name": "finops/right-size-gke-opt-gke-48540695",
+      "pr_number": 617,
+      "pr_url": "https://github.com/ESpoorthy/Finops-Autopilot/pull/617",
+      "branch_name": "finops/right-size-gke-opt-gke-2dde6579",
       "status": "SIMULATED (DEMO MODE)",
       "title": "\ud83e\udd16 FinOps Autopilot: Right-size GKE node pool (prod-core-cluster) [SIMULATED \u2014 DEMO MODE]",
       "body": "## \ud83e\udd16 FinOps Autopilot Summary \n> [!NOTE]\n> **Execution Mode**: `DEMO_MODE=true` (Simulated GitHub PR creation for hackathon demonstration).\n\n\n### \ud83e\udde0 Gemini 3.5+ Reasoning\n[GEMINI 3.5+ REASONING ENGINE (DEMO MODE)]: GKE node pool 'prod-core-cluster' exhibits persistent low CPU utilization (21.4%), allowing a safe reduction from 12 to 5 nodes. This right-sizing yields $432.00/month in savings while retaining >50% headroom for peak traffic spikes.\n\n### Finding\nGKE node pool 'default-pool' in cluster 'prod-core-cluster' is significantly over-provisioned.\n\n### Evidence\n- 30-Day Average CPU utilization: 21.4% (Peak < 38%).\n- 30-Day Average Memory utilization: 28.7% (Peak < 42%).\n- Current cluster size: 12 nodes (e2-standard-8).\n- Calculated target cluster size: 5 nodes (e2-standard-8) maintaining 50%+ safety headroom.\n\n### Configuration Comparison\n| Attribute | Current Value | Recommended Value |\n| :--- | :--- | :--- |\n| **Node Count** | `12` | **`5`** |\n| **Machine Type** | `e2-standard-8` | `e2-standard-8` |\n\n### Financial Impact\n- \ud83d\udcb0 **Projected Monthly Savings**: `$432.00`\n- \ud83d\udcc8 **Projected Annual Savings**: `$5,184.00`\n- \ud83c\udfaf **Confidence Score**: `94.0%`\n\n### Safety & Guardrails Policy\n- **Status**: `PASSED` (`AUTONOMY_WITHIN_BOUNDARIES`)\n- **Reason**: Proposal PASSED all safety guardrails. Changes are permitted via GitHub PR + Cloud Build validation + mandatory human merge.\n\n### Staging Validation Status\n- Terraform Format: `PASS`\n- Terraform Validation: `PASS`\n- Terraform Plan: `PASS`\n- Policy & Security Check: `PASS`\n- Integration Tests: `PASS`\n\n> [!IMPORTANT]\n> **Production Apply Policy**: Production Terraform deployment is **NOT** performed automatically by FinOps Autopilot. A human engineer must review and merge this PR.\n",
       "is_simulated": true
     },
-    "cloud_build_id": "build-13ff3167de88",
+    "cloud_build_id": "build-90f1da8ca13f",
     "validation_result": {
       "status": "PASS",
       "terraform_fmt": true,
@@ -58,15 +58,15 @@
     },
     "gemini_reasoning": "[GEMINI 3.5+ REASONING ENGINE (DEMO MODE)]: GKE node pool 'prod-core-cluster' exhibits persistent low CPU utilization (21.4%), allowing a safe reduction from 12 to 5 nodes. This right-sizing yields $432.00/month in savings while retaining >50% headroom for peak traffic spikes.",
     "logs": [
-      "[1/8 PENDING] Initialized execution run exec-5392ea5c for resource prod-core-cluster."
+      "[1/8 PENDING] Initialized execution run exec-d0e4b696 for resource prod-core-cluster."
     ],
     "error_message": null,
     "is_demo_mode": true
   },
   {
-    "execution_id": "exec-8ec792a1",
-    "created_at": "2026-08-31T14:19:03.232802+00:00",
-    "updated_at": "2026-08-31T14:19:03.232815+00:00",
+    "execution_id": "exec-652a90d5",
+    "created_at": "2026-08-31T15:01:57.671793+00:00",
+    "updated_at": "2026-08-31T15:01:57.671808+00:00",
     "status": "COMPLETED",
     "resource": "prod-core-cluster",
     "finding": "GKE node pool 'default-pool' in cluster 'prod-core-cluster' is significantly over-provisioned.",
@@ -94,115 +94,7 @@
     "validation_result": null,
     "gemini_reasoning": "[GEMINI 3.5+ REASONING ENGINE (DEMO MODE)]: GKE node pool 'prod-core-cluster' exhibits persistent low CPU utilization (21.4%), allowing a safe reduction from 12 to 5 nodes. This right-sizing yields $432.00/month in savings while retaining >50% headroom for peak traffic spikes.",
     "logs": [
-      "[1/8 PENDING] Initialized execution run exec-8ec792a1 for resource prod-core-cluster."
-    ],
-    "error_message": null,
-    "is_demo_mode": true
-  },
-  {
-    "execution_id": "exec-3df31529",
-    "created_at": "2026-08-31T14:40:16.088197+00:00",
-    "updated_at": "2026-08-31T14:40:16.088211+00:00",
-    "status": "COMPLETED",
-    "resource": "prod-core-cluster",
-    "finding": "GKE node pool 'default-pool' in cluster 'prod-core-cluster' is significantly over-provisioned.",
-    "evidence": [
-      "30-Day Average CPU utilization: 21.4% (Peak < 38%).",
-      "30-Day Average Memory utilization: 28.7% (Peak < 42%).",
-      "Current cluster size: 12 nodes (e2-standard-8).",
-      "Calculated target cluster size: 5 nodes (e2-standard-8) maintaining 50%+ safety headroom."
-    ],
-    "old_configuration": {
-      "node_count": 12,
-      "machine_type": "e2-standard-8"
-    },
-    "new_configuration": {
-      "node_count": 5,
-      "machine_type": "e2-standard-8"
-    },
-    "projected_monthly_savings": 432.0,
-    "projected_annual_savings": 5184.0,
-    "confidence": 0.94,
-    "risk": "LOW",
-    "safety_result": null,
-    "github_pr": null,
-    "cloud_build_id": null,
-    "validation_result": null,
-    "gemini_reasoning": "[GEMINI 3.5+ REASONING ENGINE (DEMO MODE)]: GKE node pool 'prod-core-cluster' exhibits persistent low CPU utilization (21.4%), allowing a safe reduction from 12 to 5 nodes. This right-sizing yields $432.00/month in savings while retaining >50% headroom for peak traffic spikes.",
-    "logs": [
-      "[1/8 PENDING] Initialized execution run exec-3df31529 for resource prod-core-cluster."
-    ],
-    "error_message": null,
-    "is_demo_mode": true
-  },
-  {
-    "execution_id": "exec-d4edc558",
-    "created_at": "2026-08-31T14:40:18.101148+00:00",
-    "updated_at": "2026-08-31T14:40:18.101163+00:00",
-    "status": "COMPLETED",
-    "resource": "prod-core-cluster",
-    "finding": "GKE node pool 'default-pool' in cluster 'prod-core-cluster' is significantly over-provisioned.",
-    "evidence": [
-      "30-Day Average CPU utilization: 21.4% (Peak < 38%).",
-      "30-Day Average Memory utilization: 28.7% (Peak < 42%).",
-      "Current cluster size: 12 nodes (e2-standard-8).",
-      "Calculated target cluster size: 5 nodes (e2-standard-8) maintaining 50%+ safety headroom."
-    ],
-    "old_configuration": {
-      "node_count": 12,
-      "machine_type": "e2-standard-8"
-    },
-    "new_configuration": {
-      "node_count": 5,
-      "machine_type": "e2-standard-8"
-    },
-    "projected_monthly_savings": 432.0,
-    "projected_annual_savings": 5184.0,
-    "confidence": 0.94,
-    "risk": "LOW",
-    "safety_result": null,
-    "github_pr": null,
-    "cloud_build_id": null,
-    "validation_result": null,
-    "gemini_reasoning": "[GEMINI 3.5+ REASONING ENGINE (DEMO MODE)]: GKE node pool 'prod-core-cluster' exhibits persistent low CPU utilization (21.4%), allowing a safe reduction from 12 to 5 nodes. This right-sizing yields $432.00/month in savings while retaining >50% headroom for peak traffic spikes.",
-    "logs": [
-      "[1/8 PENDING] Initialized execution run exec-d4edc558 for resource prod-core-cluster."
-    ],
-    "error_message": null,
-    "is_demo_mode": true
-  },
-  {
-    "execution_id": "exec-8cc912cc",
-    "created_at": "2026-08-31T14:40:19.277044+00:00",
-    "updated_at": "2026-08-31T14:40:19.277060+00:00",
-    "status": "COMPLETED",
-    "resource": "prod-core-cluster",
-    "finding": "GKE node pool 'default-pool' in cluster 'prod-core-cluster' is significantly over-provisioned.",
-    "evidence": [
-      "30-Day Average CPU utilization: 21.4% (Peak < 38%).",
-      "30-Day Average Memory utilization: 28.7% (Peak < 42%).",
-      "Current cluster size: 12 nodes (e2-standard-8).",
-      "Calculated target cluster size: 5 nodes (e2-standard-8) maintaining 50%+ safety headroom."
-    ],
-    "old_configuration": {
-      "node_count": 12,
-      "machine_type": "e2-standard-8"
-    },
-    "new_configuration": {
-      "node_count": 5,
-      "machine_type": "e2-standard-8"
-    },
-    "projected_monthly_savings": 432.0,
-    "projected_annual_savings": 5184.0,
-    "confidence": 0.94,
-    "risk": "LOW",
-    "safety_result": null,
-    "github_pr": null,
-    "cloud_build_id": null,
-    "validation_result": null,
-    "gemini_reasoning": "[GEMINI 3.5+ REASONING ENGINE (DEMO MODE)]: GKE node pool 'prod-core-cluster' exhibits persistent low CPU utilization (21.4%), allowing a safe reduction from 12 to 5 nodes. This right-sizing yields $432.00/month in savings while retaining >50% headroom for peak traffic spikes.",
-    "logs": [
-      "[1/8 PENDING] Initialized execution run exec-8cc912cc for resource prod-core-cluster."
+      "[1/8 PENDING] Initialized execution run exec-652a90d5 for resource prod-core-cluster."
     ],
     "error_message": null,
     "is_demo_mode": true

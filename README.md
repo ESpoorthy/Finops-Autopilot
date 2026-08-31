@@ -19,7 +19,7 @@ FinOps Autopilot strictly supports two operational modes:
 | :--- | :--- | :--- |
 | **Cost Data** | Structured seeded billing dataset ([`demo/gke_metrics.json`](file:///Users/saispoorthyeturu/Finops-Autopilot/Finops-Autopilot-1/demo/gke_metrics.json)) | Live BigQuery Billing Export SQL query (`gcp_billing_export_v1`) |
 | **Infrastructure Metrics** | Seeded 30-day GKE utilization (21.4% CPU, 28.7% Memory) | Live Google Cloud Monitoring v3 (`kubernetes.io/container/cpu/utilization`) |
-| **Reasoning Engine** | Gemini 3.5+ (`google-genai` / `google.adk`) with labeled fallback | Live Gemini 3.5+ (`gemini-2.5-flash` / Vertex AI) |
+| **Reasoning Engine** | Gemini 3.5+ (`google-genai` / `google.adk`) with labeled fallback | Live Gemini 3.5+ (`gemini-3.5-flash` / Vertex AI) |
 | **Safety Engine** | Full Safety Agent policy evaluation (IAM/KMS/DB caps) | Full Safety Agent policy evaluation |
 | **Terraform Patch** | Programmatically updates [`gke.tf`](file:///Users/saispoorthyeturu/Finops-Autopilot/Finops-Autopilot-1/infrastructure/terraform/gke.tf) (`node_count` 12 → 5) | Programmatically updates [`gke.tf`](file:///Users/saispoorthyeturu/Finops-Autopilot/Finops-Autopilot-1/infrastructure/terraform/gke.tf) |
 | **GitHub Integration** | Labeled simulation mode `[SIMULATED — DEMO MODE]` (or PyGithub if `GITHUB_TOKEN` provided) | PyGithub creates Git branch, commits patch, opens Pull Request |
@@ -64,7 +64,7 @@ GOOGLE_CLOUD_PROJECT=finops-autopilot-demo
 GOOGLE_CLOUD_LOCATION=us-central1
 
 # Gemini & Google ADK
-GEMINI_MODEL=gemini-2.5-flash
+GEMINI_MODEL=gemini-3.5-flash
 GOOGLE_GENAI_USE_VERTEXAI=FALSE
 GEMINI_API_KEY=your_gemini_api_key_here
 
