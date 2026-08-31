@@ -1,0 +1,29 @@
+{
+  "gke_clusters": [
+    {
+      "cluster_id": "projects/finops-autopilot-demo/locations/us-central1/clusters/prod-core-cluster",
+      "cluster_name": "prod-core-cluster",
+      "node_pool_name": "default-pool",
+      "location": "us-central1",
+      "current_nodes": 12,
+      "machine_type": "e2-standard-8",
+      "cost_per_node_monthly": 196.24,
+      "total_monthly_cost": 2354.88,
+      "cpu_utilization_pct": 21.4,
+      "memory_utilization_pct": 28.7,
+      "recommended_nodes": 5,
+      "recommended_machine_type": "e2-standard-8",
+      "projected_monthly_savings": 432.00,
+      "projected_annual_savings": 5184.00,
+      "confidence": 0.94,
+      "finding": "GKE node pool 'default-pool' is significantly over-provisioned for current workloads.",
+      "evidence": [
+        "CPU utilization averaged 21.4% over the last 30 days (peak < 38%).",
+        "Memory utilization averaged 28.7% over the last 30 days (peak < 42%).",
+        "Current cluster size: 12 nodes (e2-standard-8).",
+        "Target cluster size: 5 nodes (e2-standard-8) maintains 60%+ headroom for peak traffic spikes."
+      ],
+      "tf_file": "infrastructure/terraform/gke.tf"
+    }
+  ]
+}

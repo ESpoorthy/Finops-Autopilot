@@ -1,0 +1,25 @@
+steps:
+  # Step 1: Check Terraform formatting
+  - name: 'hashicorp/terraform:1.6.0'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - 'terraform fmt -check infrastructure/terraform/'
+
+  # Step 2: Validate Terraform HCL
+  - name: 'hashicorp/terraform:1.6.0'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - 'cd infrastructure/terraform && terraform init -backend=false && terraform validate'
+
+  # Step 3: Run Python Safety & Integration Tests
+  - name: 'python:3.12-slim'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - 'pip install -r requirements.txt && pytest tests/'
+
+timeout: '600s'
+options:
+  logging: CLOUD_LOGGING_ONLY
